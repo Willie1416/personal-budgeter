@@ -33,12 +33,15 @@ const AuthForm = ({ setAuthTokens }) => {
                 },{
                     headers: {
                         'Content-Type': 'application/json',
-                    },
-                }, 
-                { withCredentials: true })
-                const token = response.data.token; // Assuming token is returned in the response
-                console.log("AuthForm:", token)
-                setAuthTokens({ isAuthenticated: true, username: username, token: token }); // Update parent component that the user is authenticated
+                    }
+                });
+                 
+                const token = response.data.access; // Assuming JWT token is in `access`
+                console.log("AuthForm:", token);
+
+                // Save the token to local storage or state (for subsequent requests)
+                localStorage.setItem('authToken', token);
+                setAuthTokens({ isAuthenticated: true, username: username, token: token });
             } else {
                 await axios.post('http://localhost:8000/register/', {
                     username: username,

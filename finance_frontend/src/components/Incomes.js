@@ -22,10 +22,17 @@ const IncomeInput = ({ authState }) => {
         // Fetch incomes when the component mounts
         const fetchIncomes = async () => {
           try {
+
+            const token = authState.token;  // Get token from localStorage
+            if (!token) {
+                throw new Error('No token found in localStorage');
+            }
             // Make the request with the user's token in the header
             const response = await axios.get('http://localhost:8000/get_income/', {
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+
               },
               params: { username: authState.username }  // Send username as a query parameter
             });
@@ -61,41 +68,48 @@ const IncomeInput = ({ authState }) => {
     };
 
     // Handle adding the new income to the list
-    const handleAddIncome = (e) => {
+    const handleAddIncome = async (e) => {
         e.preventDefault();
 
         if (currentIncome.amount && currentIncome.date) {
-            // Create a new income object
-            const newIncome = {
-                username: authState.username, // Include the current username in the request body
-                amount: currentIncome.amount,
-                date: currentIncome.date.toISOString().split('T')[0]
-            };
+            try {
+                // Retrieve token from localStorage
+                const token = authState.token;
 
-            // Store the Income in the database
-            axios.post(`http://localhost:8000/income/`, 
-                newIncome, 
-                { 
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
-            .then(response => {
-                setIncomes([...incomes, newIncome]); // Add the new income object to list
-                setCurrentIncome({ amount: "", date: null}); // Reset the form
-                alert('Income added successfully')
-                console.log(response)
-            })
-            .catch(error => {
-                console.error("There was an error saving the income", error);
-                alert('Failed to add income try again')
-            })
-        
-        }else{
-            alert("Please fill out the amount and date")
+                if (!token) {
+                    throw new Error('No token found in localStorage');
+                }
+
+                // Create new income object
+                const newIncome = {
+                    username: authState.username, // Include username
+                    amount: currentIncome.amount,
+                    date: currentIncome.date.toISOString().split('T')[0] // Format date
+                };
+
+                // Add income with token in headers
+                const response = await axios.post('http://localhost:8000/income/', 
+                    newIncome, 
+                    { 
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                );
+
+                setIncomes([...incomes, newIncome]); // Update income list
+                setCurrentIncome({ amount: "", date: null }); // Reset form
+                alert('Income added successfully');
+                console.log(response);
+            } catch (error) {
+                console.error('Error saving income', error);
+                alert('Failed to add income. Please try again.');
+            }
+        } else {
+            alert("Please fill out the amount and date");
         }
     };
-
 
     return(
         <div className="income-input-container">

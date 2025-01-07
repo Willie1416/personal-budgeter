@@ -23,8 +23,6 @@ def protected_route(request):
 @api_view(['POST'])
 def register_user(request):
 
-    print("Received data:", request.data)  # Check if the data is correctly received
-
     if request.method == 'POST':
         # Data from frontend
         username = request.data.get('username')
@@ -53,16 +51,16 @@ def login_user(request):
         if user is not None:
             # Log the user in and create a session
             refresh = RefreshToken.for_user(user)
-            access_token = refresh.access_token
-            login(request, user)
-            return Response({"message": "User logged in successfully",'token': str(access_token)}, status=200)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            })        
         else:
             return Response({"message": "Invalid credentials"}, status=400)
 
 
 @api_view(['POST'])
 def income(request):
-    print(request.data)
     if request.method == 'POST':
         username = request.data.get('username')
         amount = request.data.get('amount')
@@ -94,10 +92,8 @@ def get_income(request):
 
         # Get the incomes for the logged-in user
         incomes = Income.objects.filter(user=user)
-        print(incomes)
         # Use the serializer to format the response
         serializer = IncomeSerializer(incomes, many=True)
-        print(serializer)
         return Response(serializer.data, status=200)
 
 

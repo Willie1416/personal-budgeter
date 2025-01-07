@@ -11,10 +11,11 @@ function App() {
   });
 
   // Update this function to set the authentication state
-  const handleLogin = ({isAuthenticated, username }) => {
+  const handleLogin = ({isAuthenticated, username, token }) => {
     setIsAuthenticated({
       isAuthenticated:isAuthenticated,
-      username: username,}); // Set the authentication status
+      username: username,
+      token: token}); // Set the authentication status
   };
 
   return (
