@@ -73,6 +73,7 @@ def income(request):
             return Response({"error": f"User with username {username} does not exist."}, status=400)
 
         try:
+            print(date)
             income = Income.objects.create(user=user, amount=amount, date=date)
             return Response({"message": f'{user} put in his new income of {amount} on {date}'})
         except Exception as e:
@@ -92,8 +93,10 @@ def get_income(request):
 
         # Get the incomes for the logged-in user
         incomes = Income.objects.filter(user=user)
+        print(incomes)
         # Use the serializer to format the response
         serializer = IncomeSerializer(incomes, many=True)
+        print(serializer)
         return Response(serializer.data, status=200)
 
 
