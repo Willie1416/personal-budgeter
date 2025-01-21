@@ -14,7 +14,7 @@ class Income(models.Model):
     def __str__(self):
         return f"{self.user} inputed ${self.amount} on {self.date} to their income"
 
-class Transaction(models.Model):
+class Expenses(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     category = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -36,7 +36,7 @@ class Budget(models.Model):
 def calculate_budget_summary(user):
     total_income = Income.objects.filter(use=user).aggregate(models.Sum('amount'))['amount__sum'] or 0
 
-    total_expenses = Transaction.object.filter(user=user).aggregate(models.Sum('amount'))['amount__sum'] or 0
+    total_expenses = Expenses.object.filter(user=user).aggregate(models.Sum('amount'))['amount__sum'] or 0
 
     user_budget = Budget.objects.filter(user=user.order_by('-date_set')).first()
     if user_budget:

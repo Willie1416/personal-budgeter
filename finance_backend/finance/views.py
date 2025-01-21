@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from rest_framework import viewsets, status
-from .models import Transaction, User, Income
-from .serializer import TransactionSerializer, IncomeSerializer
+from .models import Expenses, User, Income
+from .serializer import ExpensesSerializer, IncomeSerializer
 
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
@@ -73,7 +73,6 @@ def income(request):
             return Response({"error": f"User with username {username} does not exist."}, status=400)
 
         try:
-            print(date)
             income = Income.objects.create(user=user, amount=amount, date=date)
             return Response({"message": f'{user} put in his new income of {amount} on {date}'})
         except Exception as e:
@@ -93,16 +92,51 @@ def get_income(request):
 
         # Get the incomes for the logged-in user
         incomes = Income.objects.filter(user=user)
-        print(incomes)
+
         # Use the serializer to format the response
         serializer = IncomeSerializer(incomes, many=True)
-        print(serializer)
+        return Response(serializer.data, status=200)
+
+@api_view(['POST'])
+def expense(request):
+    if request.method == 'POST':
+        username = request.data.get('username')
+        amount = request.data.get('amount')
+        category = request.data.get('category')
+        date = request.data.get('date')
+
+        # Retrieve the user object using the username
+        try:
+            user = User.objects.get(username=username)  # Find the user by username
+        except User.DoesNotExist:
+            return Response({"error": f"User with username {username} does not exist."}, status=400)
+
+        try:
+            income = Expenses.objects.create(user=user, category=category, amount=amount, date=date)
+            return Response({"message": f'{user} put in his new expense of {amount} in category: {category} on {date}'})
+        except Exception as e:
+            return Response({f"error Inputing the new expense for user {user} {str(e)}"}, status=400)
+
+@api_view(['GET'])
+def get_expenses(request):
+    if request.method == 'GET':
+        # Assuming you're using the request's authenticated user
+        username = request.query_params.get('username')
+
+        # Retrieve the user object using the username
+        try:
+            user = User.objects.get(username=username)  # Find the user by username
+        except User.DoesNotExist:
+            return Response({"error": f"User with username {username} does not exist."}, status=400)
+
+        # Get the expenses for the logged-in user
+        expenses = Expenses.objects.filter(user=user)
+
+        # Use the serializer to format the response
+        serializer = ExpensesSerializer(expenses, many=True)
         return Response(serializer.data, status=200)
 
 
-class TransactionViewSet(viewsets.ModelViewSet):
-    queryset = Transaction.objects.all()
-    serializer_class = TransactionSerializer
 
 
 

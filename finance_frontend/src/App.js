@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
-import TransactionsList from './components/TransactionsList';
+import ExpensesList from './components/ExpensesList';
 import IncomeInput from './components/Incomes';
 import AuthForm from './components/AuthForm';
 
@@ -12,18 +12,18 @@ function App() {
   });
 
   // Toggle between an income transaction and expense transactions
-  const [inputMode, setInputMode] = useState('transaction');
+  const [inputMode, setInputMode] = useState('expenses');
 
   // Update this function to set the authentication state
   const handleLogin = ({isAuthenticated, username, token }) => {
     setIsAuthenticated({
-      isAuthenticated:isAuthenticated,
+      isAuthenticated: isAuthenticated,
       username: username,
       token: token}); // Set the authentication status
   };
 
   const toggleInput = () => {
-    setInputMode((prevMode) => (prevMode === 'transaction' ? 'income': 'transaction'));
+    setInputMode((prevMode) => (prevMode === 'expenses' ? 'income': 'expenses'));
   }
 
   return (
@@ -40,13 +40,13 @@ function App() {
 
           {/*Button to toggle between Transction and Income input*/}
           <button onClick={toggleInput}>
-            {inputMode === 'transaction' ? 'switch to Income Input' : 'Switch to Transaction Input'}
+            {inputMode === 'expenses' ? 'switch to Income' : 'Switch to Expenses'}
           </button>
 
-          {inputMode === 'transaction' ? (
+          {inputMode === 'expenses' ? (
             <div>
               <h3>Input Transaction</h3>
-              <TransactionsList authState={authState} />
+              <ExpensesList authState={authState} />
             </div>
           ) : (
             <div>

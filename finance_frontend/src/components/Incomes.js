@@ -36,7 +36,6 @@ const IncomeInput = ({ authState }) => {
               },
               params: { username: authState.username }  // Send username as a query parameter
             });
-            console.log(response.data)
             setIncomes(response.data); // Update state with the retrieved incomes
           } catch (error) {
             console.error('Error fetching incomes', error);

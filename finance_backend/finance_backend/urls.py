@@ -26,7 +26,6 @@ from rest_framework.routers import DefaultRouter
 from finance import views
 
 router = DefaultRouter()
-router.register(r'transactions', views.TransactionViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,6 +34,9 @@ urlpatterns = [
     path('protected-route/', views.protected_route, name="protected-route"),
     path('income/', views.income, name='income'),
     path('get_income/', views.get_income, name='get_income'),
+
+    path('expense/', views.expense, name='expense'),
+    path('get_expenses/', views.get_expenses, name='get_expenses'),
     
     path("api/", include(router.urls)),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
